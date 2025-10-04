@@ -1,3 +1,7 @@
+# Hidden Places
+
+Este es un proyecto llevado a cabo en noviembre del 2025 dentro de la Universidad Tecnológica de San Juan del Río.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
