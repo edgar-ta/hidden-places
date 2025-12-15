@@ -1,0 +1,9 @@
+# Proyecto de Hidden Places
+
+- ¿Quiero que sea una búsqueda de huevos de pascua? Estaría chido y sería más entendible. Bueno, en caso de que sí, las fechas no coincidirían, 
+así que estaría bien si hiciera el proyecto sin considerarlo una Egg Hunt
+
+- Tareas
+	- Recolectar assets
+	- Programar proyecto
+
