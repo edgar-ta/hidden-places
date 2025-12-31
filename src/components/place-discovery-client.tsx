@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import type { Place, Season, SeasonStatus, User, Sightseeing } from "@/lib/types"
+import type { Place, Season, SeasonStatus, User, Sightseeing, SerializedTimestamp } from "@/lib/types"
 import { UserGreeting } from "@/components/user-greeting"
 import { AppFooter } from "@/components/app-footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,13 +12,18 @@ import { MapPin, Trophy, Calendar, Copy, Check, Home } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
+import { deserializeTimestampOfSeason } from "@/lib/seasons"
+import { Timestamp } from "firebase/firestore"
+import { deserializeTimestampOfUser } from "@/lib/users"
+import { deserializeTimestampOfSightseeing } from "@/lib/sightseeing"
+import { runOnNull } from "@/lib/utils"
 
 interface PlaceDiscoveryClientProps {
   place: Place
-  season: Season
+  serializedSeason: SerializedTimestamp<Season>
   seasonStatus: SeasonStatus
-  user: User
-  existingSightseeing: Sightseeing | null
+  serializedUser: SerializedTimestamp<User>
+  serializedSightseeing: SerializedTimestamp<Sightseeing> | null
   sightseeingCount: number
   isFirstVisitor: boolean
   hasWonPrize: boolean
@@ -26,10 +31,10 @@ interface PlaceDiscoveryClientProps {
 
 export function PlaceDiscoveryClient({
   place,
-  season,
+  serializedSeason,
   seasonStatus,
-  user,
-  existingSightseeing,
+  serializedUser,
+  serializedSightseeing,
   sightseeingCount,
   isFirstVisitor,
   hasWonPrize,
@@ -38,20 +43,24 @@ export function PlaceDiscoveryClient({
   const [copied, setCopied] = useState(false)
   const [currentSightseeingCount, setCurrentSightseeingCount] = useState(sightseeingCount)
 
+  const user = deserializeTimestampOfUser(serializedUser);
+  const season = deserializeTimestampOfSeason(serializedSeason);
+  const sightseeing = runOnNull(deserializeTimestampOfSightseeing, serializedSightseeing);
+
   useEffect(() => {
     const key = `place_${place.id}_visited`
     const hasVisited = localStorage.getItem(key)
 
-    if (!hasVisited) {
+    if (hasVisited === null || hasVisited !== "true") {
       setIsFirstView(true)
       localStorage.setItem(key, "true")
 
       // Create sightseeing record
-      if (!existingSightseeing) {
+      if (!sightseeing) {
         createSightseeing()
       }
     }
-  }, [place.id, existingSightseeing])
+  }, [place.id, sightseeing])
 
   const createSightseeing = async () => {
     try {
@@ -77,7 +86,7 @@ export function PlaceDiscoveryClient({
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const formatDate = (timestamp: any) => {
+  const formatDate = (timestamp: Timestamp) => {
     const date = timestamp.toDate()
     return date.toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" })
   }
@@ -231,7 +240,7 @@ export function PlaceDiscoveryClient({
         )}
 
         {/* Place Information */}
-        <Card className="border-2">
+        <Card className="shadow-none border-none">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-2xl">{place.name}</CardTitle>
@@ -248,10 +257,31 @@ export function PlaceDiscoveryClient({
                 />
               </div>
             )}
-            <p className="text-muted-foreground leading-relaxed">{place.description}</p>
+            <div>
+              <span className="text-7xl">
+                &ldquo;
+              </span>
+              <p className="text-muted-foreground leading-relaxed">
+                {place.description}
+              </p>
+            </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
-              <span>{currentSightseeingCount || sightseeingCount} personas han descubierto este lugar</span>
+              <span>
+                {
+                  userPosition == 1? 
+                  "Tú eres la única persona que ha descubierto este lugar": 
+                  `${userPosition} personas han descubierto este lugar`
+                }
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <MapPin className="h-4 w-4" />
+              <span>
+                {
+                  `Encontrado el ${sightseeing?.creation.toDate().toLocaleDateString()}`
+                }
+              </span>
             </div>
           </CardContent>
         </Card>

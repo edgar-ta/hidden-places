@@ -7,7 +7,8 @@ export function AppFooter() {
         <div className="flex flex-col items-center gap-6">
           <FooterUsernameForm />
           <div className="text-center text-xs text-muted-foreground">
-            <p>Hidden Places © {new Date().getFullYear()}</p>
+            <p>Desarrollado por Edgar Trejo Avila</p>
+            <p>© Todas las vibes reservadas </p>
           </div>
         </div>
       </div>

@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation"
 import { getCurrentUser } from "@/app/actions/auth"
 import { getPlace } from "@/lib/places"
-import { getSeason, getSeasonStatus } from "@/lib/seasons"
-import { getSightseeingByUserAndPlace, getSightseeingCountForPlace } from "@/lib/sightseeing"
+import { getSeason, getSeasonStatus, serializeTimestampOfSeason } from "@/lib/seasons"
+import { getSightseeingByUserAndPlace, getSightseeingCountForPlace, serializeTimestampOfSightseeing } from "@/lib/sightseeing"
 import { PlaceDiscoveryClient } from "@/components/place-discovery-client"
+import { serializeTimestampOfUser } from "@/lib/users"
+import { runOnNull } from "@/lib/utils"
 
 export default async function PlacePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -34,10 +36,10 @@ export default async function PlacePage({ params }: { params: Promise<{ id: stri
   return (
     <PlaceDiscoveryClient
       place={place}
-      season={season}
+      serializedSeason={serializeTimestampOfSeason(season)}
       seasonStatus={seasonStatus}
-      user={user}
-      existingSightseeing={existingSightseeing}
+      serializedUser={serializeTimestampOfUser(user)}
+      serializedSightseeing={runOnNull(serializeTimestampOfSightseeing, existingSightseeing)}
       sightseeingCount={sightseeingCount}
       isFirstVisitor={isFirstVisitor}
       hasWonPrize={hasWonPrize}

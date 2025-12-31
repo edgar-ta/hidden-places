@@ -1,6 +1,6 @@
 import { db } from "@/lib/firebase"
 import { collection, doc, getDoc, setDoc, query, where, getDocs, Timestamp, orderBy, limit } from "firebase/firestore"
-import type { User } from "@/lib/types"
+import type { SerializedTimestamp, User } from "@/lib/types"
 
 export async function createUser(name: string, deviceFingerprint: string, ipAddress?: string): Promise<User> {
   const usersRef = collection(db, "users")
@@ -64,4 +64,20 @@ export async function updateUserName(userId: string, newName: string): Promise<v
 export async function updateUserLastSeen(userId: string): Promise<void> {
   const userRef = doc(db, "users", userId)
   await setDoc(userRef, { last_seen: Timestamp.now() }, { merge: true })
+}
+
+export function serializeTimestampOfUser(user: User): SerializedTimestamp<User> {
+  return {
+    ...user,
+    creation: user.creation.toDate().toISOString(),
+    last_seen: user.last_seen !== undefined? user.last_seen.toDate().toISOString(): undefined
+  };
+}
+
+export function deserializeTimestampOfUser(user: SerializedTimestamp<User>): User {
+  return {
+    ...user,
+    creation: Timestamp.fromDate(new Date(user.creation)),
+    last_seen: user.last_seen !== undefined? Timestamp.fromDate(new Date(user.last_seen)): undefined
+  }
 }

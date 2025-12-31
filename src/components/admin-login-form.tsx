@@ -50,7 +50,7 @@ export function AdminLoginForm() {
           <Shield className="h-6 w-6 text-primary" />
         </div>
         <CardTitle className="text-2xl">Panel de Administración</CardTitle>
-        <CardDescription>Ingresa tus credenciales para continuar</CardDescription>
+        <CardDescription>Ingresa las credenciales correctas para continuar</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">

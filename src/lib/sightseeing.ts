@@ -1,6 +1,6 @@
 import { db } from "@/lib/firebase"
 import { collection, doc, getDocs, setDoc, query, where, orderBy, Timestamp, limit } from "firebase/firestore"
-import type { Sightseeing } from "@/lib/types"
+import type { SerializedTimestamp, Sightseeing } from "@/lib/types"
 import { updatePlace } from "./places"
 
 export async function createSightseeing(userId: string, placeId: string): Promise<Sightseeing> {
@@ -60,4 +60,18 @@ export async function getSightseeingCountForPlace(placeId: string): Promise<numb
 
   const querySnapshot = await getDocs(q)
   return querySnapshot.size
+}
+
+export function serializeTimestampOfSightseeing(sightseeing: Sightseeing): SerializedTimestamp<Sightseeing> {
+  return {
+    ...sightseeing,
+    creation: sightseeing.creation.toDate().toISOString()
+  }
+}
+
+export function deserializeTimestampOfSightseeing(sightseeing: SerializedTimestamp<Sightseeing>): Sightseeing {
+  return {
+    ...sightseeing,
+    creation: Timestamp.fromDate(new Date(sightseeing.creation))
+  }
 }

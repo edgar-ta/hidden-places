@@ -1,6 +1,6 @@
 import { db } from "@/lib/firebase"
 import { collection, doc, getDoc, getDocs, setDoc, query, orderBy, limit, Timestamp } from "firebase/firestore"
-import type { Season, SeasonStatus } from "@/lib/types"
+import type { Season, SeasonStatus, SerializedTimestamp } from "@/lib/types"
 
 export async function getCurrentSeason(): Promise<Season | null> {
   const seasonsRef = collection(db, "seasons")
@@ -53,4 +53,20 @@ export async function createSeason(startDate: Timestamp, endDate: Timestamp, nam
 
   await setDoc(newDocRef, season)
   return season
+}
+
+export function serializeTimestampOfSeason(season: Season): SerializedTimestamp<Season> {
+  return {
+    ...season,
+    start_date: season.start_date.toDate().toISOString(),
+    end_date: season.start_date.toDate().toISOString(),
+  }
+}
+
+export function deserializeTimestampOfSeason(season: SerializedTimestamp<Season>): Season {
+  return {
+    ...season,
+    start_date: Timestamp.fromDate(new Date(season.start_date)),
+    end_date: Timestamp.fromDate(new Date(season.end_date)),
+  }
 }

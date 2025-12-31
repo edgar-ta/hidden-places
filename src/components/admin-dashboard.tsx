@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import type { Season, Place } from "@/lib/types"
+import type { Season, Place, SerializedTimestamp } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -11,13 +11,16 @@ import { toast } from "sonner"
 import { SeasonManager } from "@/components/season-manager"
 import { PlacesManager } from "@/components/places-manager"
 import { PrizeVerification } from "@/components/prize-verification"
+import { deserializeTimestampOfSeason } from "@/lib/seasons"
+import { runOnNull } from "@/lib/utils"
 
 interface AdminDashboardProps {
-  season: Season | null
+  serializedSeason: SerializedTimestamp<Season> | null
   places: Place[]
 }
 
-export function AdminDashboard({ season, places }: AdminDashboardProps) {
+export function AdminDashboard({ serializedSeason, places: places }: AdminDashboardProps) {
+  const season = runOnNull(deserializeTimestampOfSeason, serializedSeason);
   const router = useRouter()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 

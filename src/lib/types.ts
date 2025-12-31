@@ -9,7 +9,7 @@ export type Place = {
   prize: string
   special_code: string
   season_id: string
-  first_sightseeing_id: string | null
+  first_sightseeing_id?: string
   is_redeemed: boolean
   valid: boolean
 }
@@ -36,6 +36,10 @@ export type Season = {
   end_date: Timestamp
   name?: string
 }
+
+export type SerializedTimestamp<T> = { [P in keyof T]: (
+    T[P] extends Timestamp? string: 
+    T[P] extends Timestamp | undefined? string | undefined: T[P]) };
 
 export type SeasonStatus = "not-started" | "active" | "expired"
 
